@@ -1,19 +1,15 @@
 <?php
+require_once "db_credentials.php";
+
 $host = 'localhost';
-$db = 'ADISE26_Jaipur';
+$db = 'jaipur';
 
-require_once "db_config.php";
-$user = $USERNAME;
-$pass = $PASSWORD;
-
+// If on users.iee.ihu.gr, connect to the MySQL database there
 if (gethostname() == 'users.iee.ihu.gr') {
-    $mysqli = new mysqli($host, $user, $pass, $db, null, '/home/student/iee/2022/konsvrou/mysql/run/mysql.sock');
+    $mysqli = new mysqli($host, $USERNAME, $PASSWORD, $db, null, '/home/student/iee/2022/konsvrou/mysql/run/mysql.sock');
 }
 
+// If local, connect to the XAMPP MySQL database
 else {
-    $mysqli = new mysqli($host, $user, $pass, $db);
-}
-
-if ($mysqli->connect_errno) {
-    echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+    $mysqli = new mysqli($host, 'root', '', $db);
 }
