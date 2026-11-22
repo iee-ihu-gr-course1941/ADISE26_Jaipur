@@ -1,1 +1,2 @@
-lib/db_credentials.php
+/src/Lib/db_config.php
+/vendor/

@@ -1,0 +1,10 @@
+{
+    "name": "powerkostas/jaipur",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Jaipur\\": "src/"
+        }
+    },
+    "require": {}
+}
