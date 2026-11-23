@@ -6,5 +6,7 @@
             "Jaipur\\": "src/"
         }
     },
-    "require": {}
+    "require": {
+        "ext-mysqli": "*"
+    }
 }
