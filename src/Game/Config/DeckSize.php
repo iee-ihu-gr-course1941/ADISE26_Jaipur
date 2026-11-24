@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jaipur\Game\Config;
+
+use Jaipur\Game\Core\Deck;
 
 enum DeckSize: int {
     case Standard = 0;
@@ -13,9 +17,9 @@ enum DeckSize: int {
      */
     public function count(): int {
         return match ($this) {
-            DeckSize::Standard => 55,
-            DeckSize::Reduced => 42,
-            DeckSize::Extended => 68
+            self::Standard => 55,
+            self::Reduced => 42,
+            self::Extended => 68
         };
     }
 }

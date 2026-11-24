@@ -1,6 +1,8 @@
 <?php
 
-namespace Jaipur\Game;
+declare(strict_types=1);
+
+namespace Jaipur\Game\Core;
 
 use Jaipur\Game\Config\Config;
 use Jaipur\Game\Config\DeckSize;
@@ -8,16 +10,14 @@ use Jaipur\Game\Config\DeckSize;
 class Deck {
     public private(set) array $cards;
 
-    // The number of copies of each card in the deck
-    public private(set) array $cardCopies;
-
     public function __construct(Config $config) {
-        $this->cardCopies = $config->wildDeck ? $this->generateRandomCardCopies($config->deckSize) : $this->loadNonRandomCardCopies($config->deckSize);
+        // Fetches the number of copies of each card in the deck
+        $cardCopies = $config->wildDeck ? $this->generateRandomCardCopies($config->deckSize) : $this->loadNonRandomCardCopies($config->deckSize);
 
         // Generates the cards of the deck based on the card copy numbers
         $allCards = Card::cases();
         for ($i = 0; $i < count($allCards); $i += 1) {
-            for ($j = 0; $j < $this->cardCopies[$i]; $j += 1) {
+            for ($j = 0; $j < $cardCopies[$i]; $j += 1) {
                 $this->cards[] = $allCards[$i];
             }
         }
@@ -76,5 +76,10 @@ class Deck {
         } while ($randomCardCopies[Card::Camel->value] < 3);
 
         return $randomCardCopies;
+    }
+
+
+    public function drawCard() : Card {
+        return array_pop($this->cards);
     }
 }
