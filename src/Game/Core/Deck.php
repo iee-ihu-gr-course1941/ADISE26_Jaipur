@@ -79,7 +79,18 @@ class Deck {
     }
 
 
-    public function drawCard() : Card {
+    public function drawCard() : ?Card {
         return array_pop($this->cards);
+    }
+
+
+    public function drawSpecificCard(Card $targetCard): ?Card {
+        $targetCardIndex = array_search($targetCard, $this->cards, true);
+
+        if ($targetCardIndex === false) {
+            return null;
+        }
+
+        return array_splice($this->cards, $targetCardIndex, 1)[0];
     }
 }

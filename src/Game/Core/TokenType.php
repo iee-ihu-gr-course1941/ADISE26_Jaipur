@@ -15,4 +15,12 @@ enum TokenType: int {
     case Bonus_3 = 7;
     case Bonus_4 = 8;
     case Bonus_5 = 9;
+
+
+    public function isGood(): bool {
+        return match ($this) {
+            self::Leather, self::Spice, self::Cloth, self::Silver, self::Gold, self::Diamond => true,
+            self::Camel, self::Bonus_3, self::Bonus_4, self::Bonus_5 => false
+        };
+    }
 }

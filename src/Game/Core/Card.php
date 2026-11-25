@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jaipur\Game\Core;
 
+use LogicException;
+
 enum Card: int {
     case Leather = 0;
     case Spice = 1;
@@ -18,12 +20,16 @@ enum Card: int {
     public function minimumSaleQuantity(): int {
         return match ($this) {
             self::Silver, self::Gold, self::Diamond => 2,
-            self::Leather, self::Spice, self::Cloth, self::Camel => 1
+            self::Leather, self::Spice, self::Cloth => 1,
+            self::Camel => throw new LogicException('Camels cannot be sold!')
         };
     }
 
 
-    public function isCamel(): bool {
-        return $this == self::Camel;
+    public function isGood(): bool {
+        return match ($this) {
+            self::Leather, self::Spice, self::Cloth, self::Silver, self::Gold, self::Diamond => true,
+            self::Camel => false
+        };
     }
 }

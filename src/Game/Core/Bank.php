@@ -18,8 +18,6 @@ class Bank {
             }
         }
 
-        var_export($this->tokens);
-
         shuffle($this->tokens[TokenType::Bonus_3->value]);
         shuffle($this->tokens[TokenType::Bonus_4->value]);
         shuffle($this->tokens[TokenType::Bonus_5->value]);
@@ -28,11 +26,11 @@ class Bank {
 
     private function loadStandardGoodsTokenValues(TokenType $tokenType): array {
         return match ($tokenType) {
-            TokenType::Leather => [4, 3, 2, 1, 1, 1, 1, 1, 1],
-            TokenType::Spice, TokenType::Cloth => [5, 3, 3, 2, 2, 1, 1],
+            TokenType::Leather => [1, 1, 1, 1, 1, 1, 2, 3, 4],
+            TokenType::Spice, TokenType::Cloth => [1, 1, 2, 2, 3, 3, 5],
             TokenType::Silver => [5, 5, 5, 5, 5],
-            TokenType::Gold => [6, 6, 5, 5, 5],
-            TokenType::Diamond => [7, 7, 5, 5, 5]
+            TokenType::Gold => [5, 5, 5, 6, 6],
+            TokenType::Diamond => [5, 5, 5, 7, 7]
         };
     }
 
@@ -55,5 +53,22 @@ class Bank {
                 },
             },
         };
+    }
+
+
+    public function takeToken(TokenType $type): ?Token {
+        return array_pop($this->tokens[$type->value]);
+    }
+
+
+    public function countDepletedGoodsTokens(): int {
+        $count = 0;
+        foreach (TokenType::cases() as $tokenType) {
+            if ($tokenType->isGood() && empty($this->tokens[$tokenType->value])) {
+                $count += 1;
+            }
+        }
+
+        return $count;
     }
 }
