@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Jaipur\Game\Core;
+namespace Jaipur\Game\Zones;
 
-use Jaipur\Game\Config\Config;
 use Jaipur\Game\Config\DeckSize;
+use Jaipur\Game\Config\MarketSize;
+use Jaipur\Game\Core\Card;
 
 class Deck {
     public private(set) array $cards;
 
-    public function __construct(Config $config) {
+    public function __construct(bool $wildDeck, DeckSize $deckSize, MarketSize $marketSize) {
         // Fetches the number of copies of each card in the deck
-        $cardCopies = $config->wildDeck ? $this->generateRandomCardCopies($config->deckSize) : $this->loadNonRandomCardCopies($config->deckSize);
+        $cardCopies = $wildDeck ? $this->generateRandomCardCopies($deckSize, $marketSize) : $this->loadNonRandomCardCopies($deckSize);
 
         // Generates the cards of the deck based on the card copy numbers
         $allCards = Card::cases();
@@ -61,19 +62,19 @@ class Deck {
     }
 
 
-    // Because Jaipur setup requires 3 camels in the starting market, regenerate the random card copies if fewer than 3
-    // camel cards were created
-    private function generateRandomCardCopies(DeckSize $deckSize): array {
+    // Because the Jaipur setup requires x camels in the starting market, regenerate the random card copies if fewer than
+    // x camel cards were created
+    private function generateRandomCardCopies(DeckSize $deckSize, MarketSize $marketSize): array {
         $allCards = Card::cases();
 
         do {
             $randomCardCopies = array_fill(0, count($allCards), 0);
 
-            for ($i = 0; $i < $deckSize->count(); $i += 1) {
+            for ($i = 0; $i < $deckSize->value; $i += 1) {
                 $randomCard = $allCards[array_rand($allCards)];
                 $randomCardCopies[$randomCard->value] += 1;
             }
-        } while ($randomCardCopies[Card::Camel->value] < 3);
+        } while ($randomCardCopies[Card::Camel->value] < $marketSize->initialCamels());
 
         return $randomCardCopies;
     }

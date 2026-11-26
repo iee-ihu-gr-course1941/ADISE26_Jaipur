@@ -4,22 +4,13 @@ declare(strict_types=1);
 
 namespace Jaipur\Game\Config;
 
-use Jaipur\Game\Core\Deck;
+use Jaipur\Game\Zones\Deck;
 
+/**
+ * @see Deck::loadNonRandomCardCopies() to better understand the values
+ */
 enum DeckSize: int {
-    case Standard = 0;
-    case Reduced = 1;
-    case Extended = 2;
-
-
-    /**
-     * @see Deck::loadNonRandomCardCopies() to better understand the count values
-     */
-    public function count(): int {
-        return match ($this) {
-            self::Standard => 55,
-            self::Reduced => 42,
-            self::Extended => 68
-        };
-    }
+    case Standard = 55;
+    case Reduced = 42;
+    case Extended = 68;
 }

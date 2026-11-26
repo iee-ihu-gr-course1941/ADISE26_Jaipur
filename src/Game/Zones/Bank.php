@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Jaipur\Game\Core;
+namespace Jaipur\Game\Zones;
 
-use Jaipur\Game\Config\Config;
 use Jaipur\Game\Config\TokenPricing;
+use Jaipur\Game\Core\Token;
+use Jaipur\Game\Core\TokenType;
 
 class Bank {
     // 2D array of all the tokens: rows = token types, columns = token values
     public private(set) array $tokens;
 
-    public function __construct(Config $config) {
+    public function __construct(TokenPricing $tokenPricing) {
         foreach (TokenType::cases() as $tokenType) {
-            foreach ($this->loadTokenValues($config, $tokenType) as $tokenValue) {
+            foreach ($this->loadTokenValues($tokenType, $tokenPricing) as $tokenValue) {
                 $this->tokens[$tokenType->value][] = new Token($tokenType, $tokenValue);
             }
         }
@@ -34,13 +35,13 @@ class Bank {
         };
     }
 
-    private function loadTokenValues(Config $config, TokenType $tokenType): array {
+    private function loadTokenValues(TokenType $tokenType, TokenPricing $tokenPricing): array {
         return match ($tokenType) {
             TokenType::Camel => [5],
             TokenType::Bonus_3 => [1, 1, 2, 2, 2, 3, 3],
             TokenType::Bonus_4 => [4, 4, 5, 5, 6, 6],
             TokenType::Bonus_5 => [8, 8, 9, 10, 10],
-            default => match ($config->tokenPricing) {
+            default => match ($tokenPricing) {
                 TokenPricing::Standard => $this->loadStandardGoodsTokenValues($tokenType),
                 TokenPricing::Reverse => array_reverse($this->loadStandardGoodsTokenValues($tokenType)),
                 TokenPricing::Fixed => match ($tokenType) {
