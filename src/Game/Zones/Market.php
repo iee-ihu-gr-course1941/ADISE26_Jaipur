@@ -9,7 +9,7 @@ use Jaipur\Game\Core\Card;
 use LogicException;
 
 class Market {
-    public private(set) array $cards = [];
+    public private(set) array $cards;
 
     // Initializes the market with the required starting camels and the remaining starting cards
     public function __construct(MarketSize $marketSize, Deck $deck) {

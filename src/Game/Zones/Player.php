@@ -6,11 +6,14 @@ namespace Jaipur\Game\Zones;
 
 use Jaipur\Game\Config\HandLimit;
 use Jaipur\Game\Core\Card;
+use Jaipur\Game\Core\Token;
 use LogicException;
 
 class Player {
     public private(set) array $hand = []; // Non camel cards
     public private(set) array $herd = []; // Camel cards
+    public private(set) array $tokens;
+    public private(set) int $seals = 0; // Seals of excellence
     private readonly int $handLimit;
 
     public function __construct(HandLimit $handLimit, Deck $deck) {
@@ -48,5 +51,20 @@ class Player {
         else {
             $this->hand[] = $card;
         }
+    }
+
+
+    public function addToken(Token $token): void {
+        $this->tokens[] = $token;
+    }
+
+
+    public function score(): int {
+        return array_sum(array_column($this->tokens, 'value'));
+    }
+
+
+    public function addSeal(): void {
+        $this->seals += 1;
     }
 }
