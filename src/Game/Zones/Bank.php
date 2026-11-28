@@ -122,8 +122,9 @@ class Bank {
     }
 
 
-    public function takeToken(TokenType $type): ?Token {
-        return array_pop($this->tokens[$type->value]);
+    // Return null if this goods token is depleted
+    public function takeToken(TokenType $tokenType): ?Token {
+        return array_pop($this->tokens[$tokenType->value]);
     }
 
 

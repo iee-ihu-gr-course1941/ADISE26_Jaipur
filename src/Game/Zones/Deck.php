@@ -77,10 +77,10 @@ class Deck {
     }
 
 
-    public function drawCard() : ?Card {
+    // Return null if the deck is out of cards
+    public function drawCard(): ?Card {
         return array_pop($this->cards);
     }
-
 
     public function drawSpecificCard(Card $targetCard): ?Card {
         $targetCardIndex = array_search($targetCard, $this->cards, true);

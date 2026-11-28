@@ -27,7 +27,7 @@ class Player {
 
     // Referencing by card because a player's hand is an unordered collection where only the card type matters
     public function takeCard(Card $targetCard): Card {
-        if ($targetCard === Card::Camel && !empty($this->herd)) {
+        if ($targetCard === Card::Camel) {
             return array_pop($this->herd);
         }
 

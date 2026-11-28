@@ -23,4 +23,14 @@ enum TokenType: int {
             self::Camel, self::Bonus_3, self::Bonus_4, self::Bonus_5 => false
         };
     }
+
+
+    public static function bonusForSaleCount(int $cardCount): ?self {
+        return match (true) {
+            $cardCount === 3 => self::Bonus_3,
+            $cardCount === 4 => self::Bonus_4,
+            $cardCount >= 5 => self::Bonus_5,
+            default => null,
+        };
+    }
 }

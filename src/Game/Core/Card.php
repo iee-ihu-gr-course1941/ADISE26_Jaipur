@@ -16,20 +16,20 @@ enum Card: int {
     case Camel = 6;
 
 
+    public function isGood(): bool {
+        return match ($this) {
+            self::Leather, self::Spice, self::Cloth, self::Silver, self::Gold, self::Diamond => true,
+            self::Camel => false
+        };
+    }
+
+
     // When selling the 3 most expensive cards (silver, diamond, gold), the sale must include a minimum of 2 cards
     public function minimumSaleQuantity(): int {
         return match ($this) {
             self::Silver, self::Gold, self::Diamond => 2,
             self::Leather, self::Spice, self::Cloth => 1,
             self::Camel => throw new LogicException('Camels cannot be sold!')
-        };
-    }
-
-
-    public function isGood(): bool {
-        return match ($this) {
-            self::Leather, self::Spice, self::Cloth, self::Silver, self::Gold, self::Diamond => true,
-            self::Camel => false
         };
     }
 }

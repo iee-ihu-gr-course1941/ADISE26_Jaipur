@@ -8,8 +8,9 @@ use Jaipur\Game\Zones\Bank;
 use Jaipur\Game\Zones\Deck;
 
 /**
- * Change deck size, @see Deck::loadNonRandomCardCopies() to better understand the values
- * @see Bank::$tokens also get scaled appropriately
+ * Change deck size
+ * @see Deck::loadNonRandomCardCopies() to better understand the values
+ * @see Bank::$tokens get scaled appropriately
  */
 enum GameScale: int {
     case Standard = 55;

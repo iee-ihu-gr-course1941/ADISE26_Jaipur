@@ -6,6 +6,7 @@ namespace Jaipur\Game;
 
 use Jaipur\Game\Config\Config;
 use Jaipur\Game\Core\Card;
+use Jaipur\Game\Core\TokenType;
 use Jaipur\Game\Zones\Bank;
 use Jaipur\Game\Zones\Deck;
 use Jaipur\Game\Zones\Market;
@@ -51,11 +52,16 @@ class Round {
     }
 
 
+    private function triggerRoundOverSequence() : void {
+        echo 'Round Over!';
+    }
+
+
     // $targetCardIndices = the indices of the market cards that the user selected to take, $exchangeCards = the cards in
     // the player's hand/herd that they selected to exchange
-    public function takeAction(array $targetCardIndices, array $exchangeCards): TakeActionReturn {
+    public function takeAction(array $targetCardIndices, array $exchangeCards): ActionReturn {
         if (empty($targetCardIndices)) {
-            return TakeActionReturn::NoSelection;
+            return ActionReturn::NoSelection;
         }
 
         $targetCards = [];
@@ -77,7 +83,7 @@ class Round {
         }
 
         if (!$onlyGoods && !$onlyCamels) {
-            return TakeActionReturn::MixedGoodsAndCamels;
+            return ActionReturn::MixedMarketTake;
         }
 
         $player = ($this->player1Turn) ? $this->player1 : $this->player2;
@@ -87,7 +93,7 @@ class Round {
         // in the market)
         if ($onlyCamels) {
             if (count($exchangeCards) !== 0) {
-                return TakeActionReturn::ExchangeNotAllowed;
+                return ActionReturn::ExchangeNotAllowed;
             }
 
             $camelIndices = array_keys($this->market->cards, Card::Camel, true);
@@ -101,11 +107,11 @@ class Round {
         // Take a single good
         else if (count($targetCardIndices) === 1) {
             if (count($exchangeCards) !== 0) {
-                return TakeActionReturn::ExchangeNotAllowed;
+                return ActionReturn::ExchangeNotAllowed;
             }
 
             if ($remainingHandCapacity === 0) {
-                return TakeActionReturn::HandLimitExceeded;
+                return ActionReturn::HandLimitExceeded;
             }
 
             $this->takeCardFromMarket($targetCardIndices[0], $player);
@@ -114,14 +120,14 @@ class Round {
 
         // Exchange several cards between the market and the player
         else if (count($targetCardIndices) === count($exchangeCards)) {
-            // In an exchange only exchanging camel cards increases the hand size
+            // Exchanging with camel cards increases the hand size
             $camelCardsExchanged = count(array_keys($exchangeCards, Card::Camel, true));
             if ($camelCardsExchanged > $remainingHandCapacity) {
-                return TakeActionReturn::HandLimitExceeded;
+                return ActionReturn::HandLimitExceeded;
             }
 
             if (array_any($targetCards, fn ($targetCard) => in_array($targetCard, $exchangeCards, true))) {
-                return TakeActionReturn::SameGoodExchange;
+                return ActionReturn::SameGoodExchange;
             }
 
             foreach ($targetCardIndices as $i => $targetCardIndex) {
@@ -134,20 +140,55 @@ class Round {
         }
 
         else {
-            return TakeActionReturn::ExchangeCountMismatch;
+            return ActionReturn::ExchangeCountMismatch;
         }
 
         if ($this->roundOver) {
             $this->triggerRoundOverSequence();
-            return TakeActionReturn::SuccessRoundOver;
+            return ActionReturn::SuccessRoundOver;
         }
 
         $this->player1Turn = !$this->player1Turn;
-        return TakeActionReturn::Success;
+        return ActionReturn::Success;
     }
 
 
-    private function triggerRoundOverSequence() : void {
-        echo 'Round Over!';
+    public function saleAction(array $saleCards): ActionReturn {
+        if (empty($saleCards)) {
+            return ActionReturn::NoSelection;
+        }
+
+        if (count(array_unique($saleCards, SORT_REGULAR)) !== 1) {
+            return ActionReturn::MultipleGoodsSale;
+        }
+
+        if ($saleCards[0] === Card::Camel) {
+            return ActionReturn::CamelSaleNotAllowed;
+        }
+
+        if (count($saleCards) < $saleCards[0]->minimumSaleQuantity()) {
+            return ActionReturn::InvalidSaleQuantity;
+        }
+
+        $player = ($this->player1Turn) ? $this->player1 : $this->player2;
+
+        $tokenType = TokenType::from($saleCards[0]->value);
+        foreach ($saleCards as $saleCard) {
+            $player->takeCard($saleCard);
+            $tokenRewarded = $this->bank->takeToken($tokenType);
+            if ($tokenRewarded !== null) $player->addToken($tokenRewarded);
+        }
+
+        $bonusTokenType = TokenType::bonusForSaleCount(count($saleCards));
+        $bonusTokenRewarded = ($bonusTokenType !== null) ? $this->bank->takeToken($bonusTokenType) : null;
+        if ($bonusTokenRewarded !== null) $player->addToken($bonusTokenRewarded);
+
+        if ($this->bank->countDepletedGoodsTokens() === 3) {
+            $this->triggerRoundOverSequence();
+            return ActionReturn::SuccessRoundOver;
+        }
+
+        $this->player1Turn = !$this->player1Turn;
+        return ActionReturn::Success;
     }
 }
