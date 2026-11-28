@@ -11,7 +11,7 @@ use LogicException;
 class Market {
     public private(set) array $cards;
 
-    // Initializes the market with the required starting camels and the remaining starting cards
+    // Initialize the market with the required starting camel and remaining cards
     public function __construct(MarketSize $marketSize, Deck $deck) {
         for ($i = 0; $i < $marketSize->value; $i += 1) {
             if ($i < $marketSize->initialCamels()) {

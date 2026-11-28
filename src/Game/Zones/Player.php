@@ -13,7 +13,6 @@ class Player {
     public private(set) array $hand = []; // Non camel cards
     public private(set) array $herd = []; // Camel cards
     public private(set) array $tokens;
-    public private(set) int $seals = 0; // Seals of excellence
     private readonly int $handLimit;
 
     public function __construct(HandLimit $handLimit, Deck $deck) {
@@ -61,10 +60,5 @@ class Player {
 
     public function score(): int {
         return array_sum(array_column($this->tokens, 'value'));
-    }
-
-
-    public function addSeal(): void {
-        $this->seals += 1;
     }
 }

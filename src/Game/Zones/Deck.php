@@ -9,18 +9,15 @@ use Jaipur\Game\Config\MarketSize;
 use Jaipur\Game\Core\Card;
 
 class Deck {
-    public private(set) array $cards;
+    public private(set) array $cards = [];
 
     public function __construct(bool $wildDeck, GameScale $gameScale, MarketSize $marketSize) {
-        // Fetches the number of copies of each card in the deck
+        // Fetch the number of copies of each card in the deck
         $cardCopies = $wildDeck ? $this->generateRandomCardCopies($gameScale, $marketSize) : $this->loadNonRandomCardCopies($gameScale);
 
-        // Generates the cards of the deck based on the card copy numbers
-        $allCards = Card::cases();
-        for ($i = 0; $i < count($allCards); $i += 1) {
-            for ($j = 0; $j < $cardCopies[$i]; $j += 1) {
-                $this->cards[] = $allCards[$i];
-            }
+        // Generate the cards of the deck based on the card copy numbers
+        foreach (Card::cases() as $i => $card) {
+            array_push($this->cards, ...array_fill(0, $cardCopies[$i], $card));
         }
 
         shuffle($this->cards);
@@ -62,8 +59,8 @@ class Deck {
     }
 
 
-    // Because the Jaipur setup requires x camels in the starting market, regenerate the random card copies if fewer than
-    // x camel cards were created
+    // Because the Jaipur setup requires x camel cards in the starting market, regenerate the random card copies if fewer
+    // than x camel cards were created
     private function generateRandomCardCopies(GameScale $gameScale, MarketSize $marketSize): array {
         $allCards = Card::cases();
 
